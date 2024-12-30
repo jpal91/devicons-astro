@@ -41,7 +41,6 @@
   },
   "files": [
     "dist",
-    "package.json",
-    "dist/README.md"
+    "package.json"
   ]
 }
