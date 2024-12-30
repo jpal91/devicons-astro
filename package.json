@@ -4,6 +4,10 @@
   "scripts": {
     "build": "pnpm --filter devicons-astro build",
     "dev": "pnpm --filter playground dev",
-    "publish": "pnpm --filter devicons-astro publish"
+    "publish": "pnpm --filter devicons-astro publish",
+    "version:minor": "pnpm --filter devicons-astro version minor",
+    "version:patch": "pnpm --filter devicons-astro version patch",
+    "release:minor": "pnpm build && pnpm version:minor && pnpm run publish",
+    "release:patch": "pnpm build && pnpm version:patch && pnpm run publish"
   }
 }
