@@ -12,3 +12,6 @@ tsc -p ./tsconfig.json --outDir dist
 
 # Copy astro component
 cp ./src/DevIcon.astro ./dist/
+
+# Copy README
+cp ../README.md ./dist/
