@@ -1,6 +1,6 @@
 {
   "name": "devicons-astro",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "An astro integration for adding Devicons to your project",
   "author": {
     "email": "pallanschja@gmail.com",
@@ -42,6 +42,6 @@
   "files": [
     "dist",
     "package.json",
-    "README.md"
+    "dist/README.md"
   ]
 }
