@@ -4,11 +4,7 @@
   "scripts": {
     "build": "pnpm --filter devicons-astro build",
     "dev": "pnpm --filter playground dev",
-    "publish": "cp README.md ./package/README.md && pnpm --filter devicons-astro publish && rm ./package/README.md",
-    "version:minor": "pnpm --filter devicons-astro version minor",
-    "version:patch": "pnpm --filter devicons-astro version patch",
-    "release:minor": "pnpm build && pnpm version:minor && pnpm run publish",
-    "release:patch": "pnpm build && pnpm version:patch && pnpm run publish"
+    "publish": "pnpm --filter devicons-astro publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.11"
