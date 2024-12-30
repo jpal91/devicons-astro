@@ -1,5 +1,11 @@
 # devicons-astro
 
+## 0.1.8
+
+### Patch Changes
+
+- Updated for release
+
 ## 0.1.2
 
 ### Patch Changes
