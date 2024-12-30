@@ -2,6 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "build": "pnpm --filter devicons-astro build"
+    "build": "pnpm --filter devicons-astro build",
+    "dev": "pnpm --filter playground dev"
   }
 }

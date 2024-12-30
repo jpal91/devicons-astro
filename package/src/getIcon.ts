@@ -47,7 +47,7 @@ try {
   devIcons = {};
 }
 
-const genError = (name: string, version: string) => {
+const genNameError = (name: string) => {
   const nameVerMix: string | undefined = variants.find((v) => name.endsWith(v));
 
   if (nameVerMix) {
@@ -55,34 +55,41 @@ const genError = (name: string, version: string) => {
       .replace(nameVerMix, "")
       .replace(/(.*)-$/, "$1");
     throw new Error(
-      `You have included the variant type with the name. Pass the variant name separately instead (ie name="${nameWithoutVariant}" variant="${nameVerMix}"`,
-    );
-  } else if (!variants.includes(version)) {
-    throw new Error(
-      `Invalid variant type of ${version}. Must be one of '${variants.join(", ")}'`,
+      `You have likely included the variant type with the name. Pass the variant to the 'variant' prop separately instead (ie name="${nameWithoutVariant}" variant="${nameVerMix}")`,
     );
   } else {
     throw new Error(
-      `Could not find icon with name: ${name}, variant: ${version}`,
+      `Devicons does not contain the icon '${name}'. Please see https://devicon.dev for all icons`,
     );
   }
+};
+
+const genAliasError = (icon: DevIcon, badVersion: string) => {
+  const validVariants = [
+    ...icon.versions.svg,
+    ...icon.aliases.map((a) => a.alias),
+  ].join(", ");
+
+  throw new Error(
+    `Devicon '${icon.name}' does not have a variant '${badVersion}'. Valid variants: '${validVariants}'`,
+  );
 };
 
 const getUrlPath = (name: string, version: string) => {
   const targetIcon = devIconsJson.find((i) => i.name === name);
 
   if (!targetIcon) {
-    genError(name, version);
+    genNameError(name);
   }
 
-  if (version in targetIcon.versions.svg) {
+  if (targetIcon.versions.svg.includes(version)) {
     return `${name}/${name}-${version}.svg`;
   }
 
   const alias = targetIcon.aliases.find((a) => a.alias === version);
 
   if (!alias) {
-    genError(name, version);
+    genAliasError(targetIcon, version);
   }
 
   return `${name}/${name}-${alias.base as string}.svg`;

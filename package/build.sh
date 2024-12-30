@@ -8,7 +8,7 @@ mkdir ./dist
 curl -o ./dist/devicons.json https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/devicon.json
 
 # Run tsc
-tsc
+tsc -p ./tsconfig.json --outDir dist
 
 # Copy astro component
 cp ./src/DevIcon.astro ./dist/
