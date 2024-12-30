@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm --filter devicons-astro build",
-    "dev": "pnpm --filter playground dev"
+    "dev": "pnpm --filter playground dev",
+    "publish": "pnpm --filter devicons-astro publish"
   }
 }
