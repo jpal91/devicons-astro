@@ -9,5 +9,8 @@
     "version:patch": "pnpm --filter devicons-astro version patch",
     "release:minor": "pnpm build && pnpm version:minor && pnpm run publish",
     "release:patch": "pnpm build && pnpm version:patch && pnpm run publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.11"
   }
 }
