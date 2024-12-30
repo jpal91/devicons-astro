@@ -1,6 +1,6 @@
 # devicons-astro
 
-![Devicons](package/icons.jpg)
+![Devicons](icons.jpg)
 
 A package that provides a component to use icons from the awesome [Devicons](https://devicon.dev/) collection.
 
