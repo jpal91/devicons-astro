@@ -16,5 +16,8 @@ import DevIcon from "devicons-astro";
         <DevIcon name="github" size={64} />
         <DevIcon name="svelte" size={64} />
         <DevIcon name="bash" size={64} />
+        <DevIcon name="no-exist" size={64}>
+            <DevIcon name="bash" slot="fallback" size={64} />
+        </DevIcon>
     </div>
 </Layout>

@@ -17,18 +17,39 @@ const {
     ...props
 } = Astro.props;
 
-const { viewBox, inner } = await getIcon(name, variant);
+let viewBox: string;
+let inner: string;
+let fallback = false;
+
+if (Astro.slots.has("fallback")) {
+  try {
+    const { viewBox: v, inner: i } = await getIcon(name, variant)
+    viewBox = v;
+    inner = i
+  } catch {
+    fallback = true
+  }
+} else {
+  const { viewBox: v, inner: i } = await getIcon(name, variant);
+  viewBox = v;
+  inner = i;
+}
 
 const width = size ?? w ?? "24";
 const height = size ?? h ?? "24";
 ---
 
-<svg
-    viewBox={viewBox}
-    xmlns="http://www.w3.org/2000/svg"
-    width={width}
-    height={height}
-    {...props}
->
-    <Fragment set:html={inner} />
-</svg>
+{ fallback ? (
+        <slot name="fallback"  />
+    ) : (
+        <svg
+            viewBox={viewBox}
+            xmlns="http://www.w3.org/2000/svg"
+            width={width}
+            height={height}
+            {...props}
+        >
+            <Fragment set:html={inner} />
+        </svg>
+    )
+}

@@ -1,5 +1,11 @@
 # devicons-astro
 
+## 0.2.0
+
+### Minor Changes
+
+- Added ability to quietly fail and go to fallback
+
 ## 0.1.9
 
 ### Patch Changes
