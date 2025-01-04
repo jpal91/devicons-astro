@@ -1,5 +1,11 @@
 # devicons-astro
 
+## 0.1.9
+
+### Patch Changes
+
+- Changed an issue that would effect astro build
+
 ## 0.1.8
 
 ### Patch Changes

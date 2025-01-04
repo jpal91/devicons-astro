@@ -36,8 +36,21 @@ const DEVICONS_JSON = path.join(import.meta.dirname, "devicons.json");
 const CDN_URL = "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/";
 const ICON_REGEX = /<svg(?:.*?)viewBox="(.*?)"(?:.*?)>(.*?)<\/svg>/s;
 
-const devIconsJsonFile = await fs.readFile(DEVICONS_JSON, { encoding: "utf8" });
-const devIconsJson = JSON.parse(devIconsJsonFile) as DevIcon[];
+let devIconsJson: DevIcon[];
+
+try {
+  const devIconsJsonFile = await fs.readFile(DEVICONS_JSON, {
+    encoding: "utf8",
+  });
+  devIconsJson = JSON.parse(devIconsJsonFile) as DevIcon[];
+} catch {
+  const res = await fetch(
+    "https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/devicon.json",
+  );
+  const json = await res.json();
+  devIconsJson = json as DevIcon[];
+}
+
 let devIcons: Record<string, IconData>;
 
 try {
