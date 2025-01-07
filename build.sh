@@ -25,3 +25,7 @@ cd ../
 
 pnpm changeset publish
 git push --follow-tags
+
+TAG=$(git describe --abbrev=0)
+
+gh release create "$TAG" --title "$TAG" --notes "Please refer to [CHANGELOG.md](https://github.com/jpal91/devicons-astro/package/CAHNGELOG.md) for more details"
