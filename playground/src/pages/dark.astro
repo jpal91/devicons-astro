@@ -1,0 +1,24 @@
+---
+import Layout from "../layouts/Layout.astro";
+import DevIcon from "devicons-astro";
+
+// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
+// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+---
+
+<Layout dark={true}>
+    <div class="grid grid-cols-4 gap-5 w-96 m-10">
+        <DevIcon name="astro" variant="plain" responsiveColors={true} size={64} />
+        <DevIcon name="typescript" size={64} />
+        <DevIcon name="react" variant="original-wordmark" size={64} />
+        <DevIcon name="javascript" size={64} />
+        <DevIcon name="vite" size={64} />
+        <DevIcon name="rust" variant={["nothing", "original"]} responsiveColors={true} size={64} />
+        <DevIcon name="svelte" size={64} />
+        <DevIcon name="bash" size={64} />
+        <DevIcon name="no-exist" size={64}>
+            <DevIcon name="bash" slot="fallback" responsiveColors={true} size={64} />
+        </DevIcon>
+    </div>
+    <div class="w-20 h-20 bg-[#ff5d01]" />
+</Layout>

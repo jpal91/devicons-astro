@@ -11,12 +11,14 @@ type DevIcon = {
   versions: {
     svg: string[];
   };
+  color: string;
   aliases: Aliases[];
 };
 
 type IconData = {
   viewBox: string;
   inner: string;
+  color: string;
 };
 
 export const Variants = [
@@ -77,29 +79,52 @@ const genNameError = (name: string) => {
   }
 };
 
-const genAliasError = (icon: DevIcon, badVersion: string) => {
+const genAliasError = (icon: DevIcon, badVersion: string | string[]) => {
   const validVariants = [
     ...icon.versions.svg,
     ...icon.aliases.map((a) => a.alias),
   ].join(", ");
+  const bversion =
+    typeof badVersion === "string" ? badVersion : badVersion.join(", ");
 
   throw new Error(
-    `Devicon '${icon.name}' does not have a variant '${badVersion}'. Valid variants: '${validVariants}'`,
+    `Devicon '${icon.name}' does not have a variant(s) '${badVersion}'. Valid variants: '${validVariants}'`,
   );
 };
 
-const getUrlPath = (name: string, version: string) => {
+const getUrlPath = (name: string, version: string | string[]) => {
   const targetIcon = devIconsJson.find((i) => i.name === name);
 
   if (!targetIcon) {
     genNameError(name);
   }
 
-  if (targetIcon.versions.svg.includes(version)) {
+  if (
+    typeof version === "string" &&
+    targetIcon.versions.svg.includes(version)
+  ) {
     return `${name}/${name}-${version}.svg`;
+  } else {
+    for (const v of version) {
+      if (targetIcon.versions.svg.includes(v)) {
+        return `${name}/${name}-${v}.svg`;
+      }
+    }
   }
 
-  const alias = targetIcon.aliases.find((a) => a.alias === version);
+  let alias: Aliases;
+
+  if (typeof version === "string") {
+    alias = targetIcon.aliases.find((a) => a.alias === version);
+  } else {
+    for (const v of version) {
+      const ali = targetIcon.aliases.find((a) => a.alias === v);
+      if (ali) {
+        alias = ali;
+        break;
+      }
+    }
+  }
 
   if (!alias) {
     genAliasError(targetIcon, version);
@@ -108,7 +133,7 @@ const getUrlPath = (name: string, version: string) => {
   return `${name}/${name}-${alias.base as string}.svg`;
 };
 
-const iconFromCDN = async (name: string, version: string) => {
+const iconFromCDN = async (name: string, version: string | string[]) => {
   const urlPath = getUrlPath(name, version);
   const url = new URL(urlPath, CDN_URL);
   const res = await fetch(url);
@@ -125,9 +150,12 @@ const iconFromCDN = async (name: string, version: string) => {
   const viewBox = matches[1];
   const inner = matches[2];
 
+  const icon = devIconsJson.find((i) => i.name === name);
+
   const iconData = {
     inner,
     viewBox,
+    color: icon.color,
   } as IconData;
 
   devIcons[`${name}:${version}`] = iconData;
@@ -136,7 +164,7 @@ const iconFromCDN = async (name: string, version: string) => {
   return iconData;
 };
 
-const getIcon = async (name: string, version: string) => {
+const getIcon = async (name: string, version: string | string[]) => {
   const key = `${name}:${version}`;
 
   if (!(key in devIcons)) {

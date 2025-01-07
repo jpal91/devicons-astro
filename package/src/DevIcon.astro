@@ -1,38 +1,51 @@
 ---
 import getIcon, { type Variants } from "./getIcon";
+import getResponsiveColors, { type ColorObject } from "./color";
 import type { HTMLAttributes } from "astro/types";
 
 interface Props extends HTMLAttributes<"svg"> {
     name: string;
-    variant?: (typeof Variants)[number];
+    variant?: (typeof Variants)[number] | Array<(typeof Variants)[number]>;
     size?: string | number;
+    responsiveColors?: boolean | ColorObject
 }
 
 const {
     name,
-    variant = "original",
+    variant = ["original", "plain", "line"],
     size,
     width: w,
     height: h,
+    responsiveColors,
     ...props
 } = Astro.props;
 
 let viewBox: string;
 let inner: string;
+let color: string;
 let fallback = false;
 
 if (Astro.slots.has("fallback")) {
   try {
-    const { viewBox: v, inner: i } = await getIcon(name, variant)
+    const { viewBox: v, inner: i, color: c } = await getIcon(name, variant)
     viewBox = v;
     inner = i
+    color = c;
   } catch {
     fallback = true
   }
 } else {
-  const { viewBox: v, inner: i } = await getIcon(name, variant);
+  const { viewBox: v, inner: i, color: c } = await getIcon(name, variant);
   viewBox = v;
   inner = i;
+  color = c;
+}
+
+if (responsiveColors) {
+  const { fallbackDark, fallbackLight } = getResponsiveColors(responsiveColors, color)
+
+  fallbackDark && ( props["data-fallback-dark"] = fallbackDark );
+  fallbackLight && ( props["data-fallback-light"] = fallbackLight );
 }
 
 const width = size ?? w ?? "24";
@@ -53,3 +66,21 @@ const height = size ?? h ?? "24";
         </svg>
     )
 }
+
+<script>
+  const dark = window.matchMedia("(prefers-color-scheme:dark)")
+
+  const toggleResponsiveColors = (dark: MediaQueryList | MediaQueryListEvent) => {
+    const query = dark.matches ? "svg[data-fallback-dark]" : "svg[data-fallback-light]"
+
+    document.querySelectorAll(query)?.forEach((e) => {
+      const element = e as SVGElement
+      const fallback = element.dataset[dark.matches ? "fallbackDark" : "fallbackLight"]
+      element.style.fill = fallback
+    })
+  }
+
+  dark.addEventListener("change", toggleResponsiveColors)
+
+  toggleResponsiveColors(dark)
+</script>

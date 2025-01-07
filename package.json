@@ -2,8 +2,10 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "build": "pnpm --filter devicons-astro build",
+    "build:pkg": "pnpm --filter devicons-astro build",
+    "build": "./build.sh",
     "dev": "pnpm --filter playground dev",
+    "rb:dev": "pnpm --filter devicons-astro rb devicons-astro",
     "publish": "pnpm --filter devicons-astro publish"
   },
   "devDependencies": {

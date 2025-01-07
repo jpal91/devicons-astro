@@ -1,3 +1,10 @@
+---
+interface Props {
+  dark?: boolean;
+}
+
+const { dark } = Astro.props;
+---
 <!doctype html>
 <html lang="en">
 	<head>
@@ -7,7 +14,7 @@
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro Basics</title>
 	</head>
-	<body>
+	<body class:list={[{ "bg-slate-950": dark }]}>
 		<slot />
 	</body>
 </html>
