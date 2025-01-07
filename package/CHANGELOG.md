@@ -1,5 +1,11 @@
 # devicons-astro
 
+## 0.3.0
+
+### Minor Changes
+
+- Added new responsive colors prop to DevIcon
+
 ## 0.2.0
 
 ### Minor Changes
