@@ -1,5 +1,11 @@
 # devicons-astro
 
+## 0.3.3
+
+### Patch Changes
+
+- Reworked variant logic so that variant arrays will choose the higher priority picks first using named versions or aliases instead of prioritizing named versions
+
 ## 0.3.2
 
 ### Patch Changes
