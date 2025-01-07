@@ -1,5 +1,11 @@
 # devicons-astro
 
+## 0.3.2
+
+### Patch Changes
+
+- Fixing version tag issue
+
 ## 0.3.0
 
 ### Minor Changes
