@@ -99,38 +99,61 @@ const getUrlPath = (name: string, version: string | string[]) => {
     genNameError(name);
   }
 
-  if (
-    typeof version === "string" &&
-    targetIcon.versions.svg.includes(version)
-  ) {
-    return `${name}/${name}-${version}.svg`;
-  } else {
-    for (const v of version) {
-      if (targetIcon.versions.svg.includes(v)) {
-        return `${name}/${name}-${v}.svg`;
-      }
-    }
-  }
+  const aliases: Aliases[] = targetIcon.versions.svg.map(
+    (v) => ({ base: v, alias: v }) as Aliases,
+  );
 
-  let alias: Aliases;
+  aliases.push(...targetIcon.aliases);
 
   if (typeof version === "string") {
-    alias = targetIcon.aliases.find((a) => a.alias === version);
+    const match = aliases.find((a) => a.alias === version);
+
+    if (match) {
+      return `${name}/${name}-${String(match.base)}.svg`;
+    }
   } else {
     for (const v of version) {
-      const ali = targetIcon.aliases.find((a) => a.alias === v);
-      if (ali) {
-        alias = ali;
-        break;
+      const match = aliases.find((a) => a.alias === v);
+
+      if (match) {
+        return `${name}/${name}-${String(match.base)}.svg`;
       }
     }
   }
 
-  if (!alias) {
-    genAliasError(targetIcon, version);
-  }
+  // if (
+  //   typeof version === "string" &&
+  //   targetIcon.versions.svg.includes(version)
+  // ) {
+  //   return `${name}/${name}-${version}.svg`;
+  // } else {
+  //   for (const v of version) {
+  //     if (targetIcon.versions.svg.includes(v)) {
+  //       return `${name}/${name}-${v}.svg`;
+  //     }
+  //   }
+  // }
 
-  return `${name}/${name}-${alias.base as string}.svg`;
+  // let alias: Aliases;
+
+  // if (typeof version === "string") {
+  //   alias = targetIcon.aliases.find((a) => a.alias === version);
+  // } else {
+  //   for (const v of version) {
+  //     const ali = targetIcon.aliases.find((a) => a.alias === v);
+  //     if (ali) {
+  //       alias = ali;
+  //       break;
+  //     }
+  //   }
+  // }
+
+  // if (!alias) {
+  //   genAliasError(targetIcon, version);
+  // }
+
+  // return `${name}/${name}-${alias.base as string}.svg`;
+  genAliasError(targetIcon, version);
 };
 
 const iconFromCDN = async (name: string, version: string | string[]) => {
