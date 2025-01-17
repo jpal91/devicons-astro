@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pnpm changeset
+# pnpm changeset
 pnpm changeset version
 
 git add .

@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
+import { parse, stringify, type INode } from "svgson";
 
 type Aliases = {
   base: keyof DevIcon["versions"]["svg"];
@@ -16,8 +17,7 @@ type DevIcon = {
 };
 
 type IconData = {
-  viewBox: string;
-  inner: string;
+  svg: INode;
   color: string;
 };
 
@@ -36,7 +36,6 @@ const variants = [...Variants] as string[];
 const CACHE_JSON = path.join(import.meta.dirname, "cache.json");
 const DEVICONS_JSON = path.join(import.meta.dirname, "devicons.json");
 const CDN_URL = "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/";
-const ICON_REGEX = /<svg(?:.*?)viewBox="(.*?)"(?:.*?)>(.*?)<\/svg>/s;
 
 let devIconsJson: DevIcon[];
 
@@ -109,75 +108,70 @@ const getUrlPath = (name: string, version: string | string[]) => {
     const match = aliases.find((a) => a.alias === version);
 
     if (match) {
-      return `${name}/${name}-${String(match.base)}.svg`;
+      return {
+        urlPath: `${name}/${name}-${String(match.base)}.svg`,
+        variant: match.base,
+      };
     }
   } else {
     for (const v of version) {
       const match = aliases.find((a) => a.alias === v);
 
       if (match) {
-        return `${name}/${name}-${String(match.base)}.svg`;
+        return {
+          urlPath: `${name}/${name}-${String(match.base)}.svg`,
+          variant: match.base,
+        };
       }
     }
   }
 
-  // if (
-  //   typeof version === "string" &&
-  //   targetIcon.versions.svg.includes(version)
-  // ) {
-  //   return `${name}/${name}-${version}.svg`;
-  // } else {
-  //   for (const v of version) {
-  //     if (targetIcon.versions.svg.includes(v)) {
-  //       return `${name}/${name}-${v}.svg`;
-  //     }
-  //   }
-  // }
-
-  // let alias: Aliases;
-
-  // if (typeof version === "string") {
-  //   alias = targetIcon.aliases.find((a) => a.alias === version);
-  // } else {
-  //   for (const v of version) {
-  //     const ali = targetIcon.aliases.find((a) => a.alias === v);
-  //     if (ali) {
-  //       alias = ali;
-  //       break;
-  //     }
-  //   }
-  // }
-
-  // if (!alias) {
-  //   genAliasError(targetIcon, version);
-  // }
-
-  // return `${name}/${name}-${alias.base as string}.svg`;
   genAliasError(targetIcon, version);
 };
 
+const fixInner = (svg: INode, name: string, version: string) => {
+  const defsIdx = svg.children.findIndex((child) => child.name === "defs");
+
+  if (defsIdx === -1) {
+    return svg;
+  }
+
+  const variantId = `${name}-${version}`;
+
+  svg.children.forEach((child) => {
+    if (child.name === "defs") {
+      child.children.forEach((def) => {
+        const id = def.attributes.id;
+
+        if (id) {
+          def.attributes.id = `${variantId}-${id}`;
+        }
+      });
+    } else if (child.attributes.fill?.startsWith("url")) {
+      const id = child.attributes.fill.slice(5, -1);
+      child.attributes.fill = `url(#${variantId}-${id})`;
+    }
+  });
+
+  return svg;
+};
+
 const iconFromCDN = async (name: string, version: string | string[]) => {
-  const urlPath = getUrlPath(name, version);
+  const { urlPath, variant } = getUrlPath(name, version);
   const url = new URL(urlPath, CDN_URL);
   const res = await fetch(url);
   const raw = await res.text();
 
-  const matches = raw.match(ICON_REGEX);
+  let svg = await parse(raw);
 
-  if (matches && matches.length <= 2) {
-    throw new Error(
-      `Could not parse svg data for name: ${name}, version: ${version}`,
-    );
-  }
+  svg.attributes.xmlns = "http://www.w3.org/2000/svg";
 
-  const viewBox = matches[1];
-  const inner = matches[2];
+  svg = fixInner(svg, name, variant as string);
 
   const icon = devIconsJson.find((i) => i.name === name);
 
   const iconData = {
-    inner,
-    viewBox,
+    svg,
     color: icon.color,
   } as IconData;
 

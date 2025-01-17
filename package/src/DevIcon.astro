@@ -1,6 +1,7 @@
 ---
 import getIcon, { type Variants } from "./getIcon";
 import getResponsiveColors, { type ColorObject } from "./color";
+import { stringify, type INode } from 'svgson'
 import type { HTMLAttributes } from "astro/types";
 
 interface Props extends HTMLAttributes<"svg"> {
@@ -20,24 +21,21 @@ const {
     ...props
 } = Astro.props;
 
-let viewBox: string;
-let inner: string;
+let svg: INode;
 let color: string;
 let fallback = false;
 
 if (Astro.slots.has("fallback")) {
   try {
-    const { viewBox: v, inner: i, color: c } = await getIcon(name, variant)
-    viewBox = v;
-    inner = i
+    const { svg: s, color: c } = await getIcon(name, variant)
+    svg = s;
     color = c;
   } catch {
     fallback = true
   }
 } else {
-  const { viewBox: v, inner: i, color: c } = await getIcon(name, variant);
-  viewBox = v;
-  inner = i;
+  const { svg: s, color: c } = await getIcon(name, variant);
+  svg = s;
   color = c;
 }
 
@@ -50,20 +48,25 @@ if (responsiveColors) {
 
 const width = size ?? w ?? "24";
 const height = size ?? h ?? "24";
+
+let svgString: string | undefined;
+
+if (svg) {
+  svg.attributes = {
+    ...svg?.attributes,
+    width: String(width),
+    height: String(height),
+    ...props as Record<string, string>
+  }
+
+  svgString = stringify(svg)
+}
 ---
 
 { fallback ? (
         <slot name="fallback"  />
     ) : (
-        <svg
-            viewBox={viewBox}
-            xmlns="http://www.w3.org/2000/svg"
-            width={width}
-            height={height}
-            {...props}
-        >
-            <Fragment set:html={inner} />
-        </svg>
+        <Fragment set:html={svgString} />
     )
 }
 
